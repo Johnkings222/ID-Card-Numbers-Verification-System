@@ -1,8 +1,8 @@
-# Quick Start Guide
+# 快速入门指南
 
-## Installation
+## 安装
 
-1. **Install system dependencies (Tesseract OCR)**:
+1. **安装系统依赖（Tesseract OCR）**:
 
    **Ubuntu/Debian:**
    ```bash
@@ -15,91 +15,91 @@
    brew install tesseract tesseract-lang
    ```
 
-2. **Install Python dependencies**:
+2. **安装 Python 依赖**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the application**:
+3. **运行应用程序**:
    ```bash
    python id_card_verifier.py
    ```
 
-## Testing the Verification Logic
+## 测试验证逻辑
 
-Run the test script to verify everything works:
+运行测试脚本以验证一切正常工作：
 
 ```bash
 python test_verifier.py
 ```
 
-Expected output: ✅ All tests passed!
+预期输出：所有测试通过！
 
-## Using the Application
+## 使用应用程序
 
-### Step 1: Upload Image
-- Click "📁 Upload ID Card Image"
-- Select a Chinese ID card image (PNG, JPG, etc.)
-- Image will display on the left side
+### 步骤 1：上传图像
+- 点击"上传身份证图片"
+- 选择一张中国身份证图像（PNG、JPG 等）
+- 图像将显示在左侧
 
-### Step 2: Extract & Verify
-- Click "🔍 Extract & Verify"
-- Watch the status bar for progress:
-  - "Processing... ⏳"
-  - "Preprocessing image..."
-  - "Extracting text..."
-  - "Verifying ID number..."
-- Results appear on the right side
+### 步骤 2：识别并验证
+- 点击"识别并验证"
+- 观察状态栏显示进度：
+  - "处理中..."
+  - "预处理图片中..."
+  - "提取文本中..."
+  - "验证身份证号码..."
+- 结果显示在右侧
 
-### Step 3: Review Results
-The system displays:
-- **Extracted ID Number**: The 18-digit ID found in the image
-- **Verification Result**:
-  - ✅ VALID ID CARD (if all checks pass)
-  - ❌ INVALID ID CARD (with specific reason)
-- **Status Bar**: Shows current status
+### 步骤 3：查看结果
+系统显示：
+- **提取的身份证号码**：图像中找到的 18 位身份证号
+- **验证结果**：
+  - 身份证号码有效（如果所有检查都通过）
+  - 身份证号码无效（附带具体原因）
+- **状态栏**：显示当前状态
 
-### Step 4: Save Results (Optional)
-- Click "💾 Save Result"
-- Data is appended to `results.csv`
-- Includes: filename, ID number, status, timestamp
+### 步骤 4：保存结果（可选）
+- 点击"保存结果"
+- 数据将追加到 `results.csv`
+- 包括：文件名、身份证号码、状态、时间戳
 
-### Step 5: Clear (Start Over)
-- Click "🗑️ Clear"
-- Resets the entire interface
-- Ready for next ID card
+### 步骤 5：清空（重新开始）
+- 点击"清空"
+- 重置整个界面
+- 准备处理下一张身份证
 
-## Test ID Numbers
+## 测试身份证号码
 
-Use these for testing without an actual ID card image:
+在没有实际身份证图像的情况下，可以使用这些进行测试：
 
-**Valid IDs:**
-- `11010519491231002X` (Beijing, 1949)
-- `440524198001010013` (Guangdong, 1980)
-- `510102198901010017` (Sichuan, 1989)
+**有效身份证号：**
+- `11010519491231002X`（北京，1949年）
+- `440524198001010013`（广东，1980年）
+- `510102198901010017`（四川，1989年）
 
-**Invalid IDs (for testing error handling):**
-- `11010519491231002Y` (wrong checksum)
-- `110105194913310020` (invalid month: 13)
-- `11010519491232002X` (invalid day: 32)
+**无效身份证号（用于测试错误处理）：**
+- `11010519491231002Y`（校验码错误）
+- `110105194913310020`（月份无效：13）
+- `11010519491232002X`（日期无效：32）
 
-## Creating Test Images
+## 创建测试图像
 
-To create test images for OCR:
+为 OCR 创建测试图像：
 
-1. Create a simple image with ID number text
-2. Use a clear, readable font (e.g., Arial, 20-24pt)
-3. White background, black text works best
-4. Include just the 18-digit number
+1. 创建一个带有身份证号文本的简单图像
+2. 使用清晰、可读的字体（例如 Arial，20-24pt）
+3. 白色背景、黑色文字效果最好
+4. 仅包含 18 位数字
 
-Example using ImageMagick:
+使用 ImageMagick 的示例：
 ```bash
 convert -size 600x100 xc:white -font Arial -pointsize 32 \
   -fill black -gravity center -annotate +0+0 "11010519491231002X" \
   test_id.png
 ```
 
-Or using Python PIL:
+或使用 Python PIL：
 ```python
 from PIL import Image, ImageDraw, ImageFont
 
@@ -109,49 +109,49 @@ draw.text((50, 30), "11010519491231002X", fill='black')
 img.save('test_id.png')
 ```
 
-## Troubleshooting
+## 故障排除
 
-### No OCR library available
+### 没有可用的 OCR 库
 ```bash
 pip install pytesseract easyocr
 ```
 
-### Tesseract not found
+### 找不到 Tesseract
 ```bash
-# Check if installed
+# 检查是否已安装
 tesseract --version
 
-# If not found, install it (Ubuntu)
+# 如果未找到，安装它（Ubuntu）
 sudo apt-get install tesseract-ocr
 ```
 
-### Poor OCR accuracy
-- Ensure image is clear and high resolution
-- ID number should be clearly visible
-- Good lighting, no glare
-- Straight-on photo (not angled)
+### OCR 准确度低
+- 确保图像清晰且分辨率高
+- 身份证号码应清晰可见
+- 光线充足，无眩光
+- 正面拍摄（不倾斜）
 
-### GUI not appearing
-- Make sure tkinter is installed (usually comes with Python)
-- On Linux, you may need: `sudo apt-get install python3-tk`
+### GUI 未出现
+- 确保已安装 tkinter（通常随 Python 一起提供）
+- 在 Linux 上，您可能需要：`sudo apt-get install python3-tk`
 
-## What Gets Verified?
+## 验证什么？
 
-The system checks:
+系统检查：
 
-1. **Length**: Must be exactly 18 characters
-2. **Address Code**: First 6 digits (must be numeric)
-3. **Birth Date**: Characters 7-14 (valid YYYYMMDD format)
-4. **Sequence Code**: Characters 15-17 (must be numeric)
-5. **Checksum**: Character 18 (calculated using weighted algorithm)
+1. **长度**：必须恰好为 18 位字符
+2. **地址码**：前 6 位（必须为数字）
+3. **出生日期**：第 7-14 位（有效的 YYYYMMDD 格式）
+4. **顺序码**：第 15-17 位（必须为数字）
+5. **校验码**：第 18 位（使用加权算法计算）
 
-All checks must pass for a ✅ VALID result.
+所有检查都必须通过才能获得有效结果。
 
-## Output Files
+## 输出文件
 
-- `results.csv` - Created when you save results
-- Contains: filename, extracted_id, verification_status, timestamp
+- `results.csv` - 保存结果时创建
+- 包含：文件名、提取的身份证号、验证状态、时间戳
 
-## Need Help?
+## 需要帮助？
 
-See the full [README.md](README.md) for detailed documentation.
+请参阅完整的 [README.md](README.md) 了解详细文档。

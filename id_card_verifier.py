@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Automatic Identification and Verification System for Chinese ID Card Numbers
-Based on Image Processing
+基于图像处理的中国身份证号码自动识别与验证系统
 """
 
 import tkinter as tk
@@ -16,21 +15,21 @@ import os
 import platform
 import sys
 
-# OCR imports
+# OCR 导入
 try:
     import pytesseract
     PYTESSERACT_AVAILABLE = True
 
-    # Windows-specific Tesseract path configuration
+    # Windows 系统 Tesseract 路径配置
     if platform.system() == 'Windows':
-        # Common installation paths on Windows
+        # Windows 系统常见安装路径
         possible_paths = [
             r'C:\Program Files\Tesseract-OCR\tesseract.exe',
             r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
             r'C:\Users\{}\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'.format(os.getenv('USERNAME', '')),
         ]
 
-        # Try to find Tesseract in common locations
+        # 尝试在常见位置查找 Tesseract
         tesseract_found = False
         for path in possible_paths:
             if os.path.exists(path):
@@ -56,35 +55,35 @@ except ImportError:
 
 
 class ChineseIDVerifier:
-    """Chinese ID Card Number Verification Logic"""
+    """中国身份证号码验证逻辑"""
 
-    # Weighted factors for first 17 digits
+    # 前17位数字的加权因子
     WEIGHTS = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
 
-    # Checksum mapping
+    # 校验码映射
     CHECKSUM_MAP = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2']
 
     @staticmethod
     def extract_id_number(text):
-        """Extract 18-digit Chinese ID number from text using regex"""
-        # Pattern for 18-digit ID: 17 digits + (digit or X)
+        """使用正则表达式从文本中提取18位中国身份证号码"""
+        # 18位身份证号码模式: 17位数字 + (数字或X)
         pattern = r'\b\d{17}[\dXx]\b'
         matches = re.findall(pattern, text)
 
         if matches:
-            # Return first match, convert x to X
+            # 返回第一个匹配，将 x 转换为 X
             return matches[0].upper()
         return None
 
     @staticmethod
     def validate_address_code(id_number):
-        """Validate first 6 digits (address code)"""
+        """验证前6位（地址码）"""
         address_code = id_number[:6]
         return address_code.isdigit()
 
     @staticmethod
     def validate_birth_date(id_number):
-        """Validate birth date (positions 7-14, YYYYMMDD)"""
+        """验证出生日期（第7-14位，YYYYMMDD格式）"""
         birth_date_str = id_number[6:14]
 
         if not birth_date_str.isdigit():
@@ -95,7 +94,7 @@ class ChineseIDVerifier:
             month = int(birth_date_str[4:6])
             day = int(birth_date_str[6:8])
 
-            # Basic validation
+            # 基本验证
             if year < 1900 or year > datetime.now().year:
                 return False
             if month < 1 or month > 12:
@@ -103,7 +102,7 @@ class ChineseIDVerifier:
             if day < 1 or day > 31:
                 return False
 
-            # Try to create a date object to verify validity
+            # 尝试创建日期对象以验证有效性
             datetime(year, month, day)
             return True
         except ValueError:
@@ -111,56 +110,56 @@ class ChineseIDVerifier:
 
     @staticmethod
     def validate_sequence_code(id_number):
-        """Validate sequence code (positions 15-17)"""
+        """验证顺序码（第15-17位）"""
         sequence_code = id_number[14:17]
         return sequence_code.isdigit()
 
     @staticmethod
     def validate_checksum(id_number):
-        """Validate checksum digit using Chinese ID algorithm"""
+        """使用中国身份证算法验证校验码"""
         if len(id_number) != 18:
             return False
 
-        # Calculate weighted sum of first 17 digits
+        # 计算前17位数字的加权和
         weighted_sum = 0
         for i in range(17):
             digit = int(id_number[i])
             weighted_sum += digit * ChineseIDVerifier.WEIGHTS[i]
 
-        # Get checksum index
+        # 获取校验码索引
         checksum_index = weighted_sum % 11
         expected_checksum = ChineseIDVerifier.CHECKSUM_MAP[checksum_index]
 
-        # Compare with actual last digit
+        # 与实际的最后一位进行比较
         actual_checksum = id_number[17].upper()
         return actual_checksum == expected_checksum
 
     @classmethod
     def verify_id(cls, id_number):
         """
-        Complete verification of Chinese ID number
-        Returns: (is_valid, error_message)
+        完整验证中国身份证号码
+        返回: (是否有效, 错误信息)
         """
         if not id_number:
             return False, "未找到身份证号码"
 
-        # Check length
+        # 检查长度
         if len(id_number) != 18:
             return False, f"长度无效：{len(id_number)}位（应为18位）"
 
-        # Validate address code
+        # 验证地址码
         if not cls.validate_address_code(id_number):
             return False, "地址码无效（前6位）"
 
-        # Validate birth date
+        # 验证出生日期
         if not cls.validate_birth_date(id_number):
             return False, "出生日期无效"
 
-        # Validate sequence code
+        # 验证顺序码
         if not cls.validate_sequence_code(id_number):
             return False, "顺序码无效"
 
-        # Validate checksum
+        # 验证校验码
         if not cls.validate_checksum(id_number):
             return False, "校验码无效"
 
